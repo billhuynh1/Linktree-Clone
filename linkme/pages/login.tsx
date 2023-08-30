@@ -1,15 +1,17 @@
+import { useRouter } from "next/router";
 import supabase from "@/utils/supabaseClient";
 import { useState } from "react";
 
-export default function Signup() {
+export default function Login() {
     const[email, setEmail] = useState<string | undefined>();
     const[password, setPassword] = useState<string | undefined>();
+    const router = useRouter();
 
-    async function signUpWithEmail(e) {
+    async function signInWithEmail(e) {
       e.preventDefault();
         try {
           if (email && password) {
-          const response = await supabase.auth.signUp({
+          const response = await supabase.auth.signInWithPassword({
             email: email, 
             password: password,
           });
@@ -18,6 +20,7 @@ export default function Signup() {
           if (response.error) throw response.error;
           const userId = response.data.user?.id;
           console.log("User ID: ", userId);
+          router.push("/");
         }
       } catch {}
     }
@@ -25,8 +28,9 @@ export default function Signup() {
         <>
           <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+
               <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-                Register Your Account
+                Sign In
               </h2>
             </div>
     
@@ -72,9 +76,9 @@ export default function Signup() {
                   <button
                     type="submit"
                     className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                    onClick={signUpWithEmail}
+                    onClick={signInWithEmail}
                   >
-                    Sign Up
+                    Sign In
                   </button>
                 </div>
               </form>
