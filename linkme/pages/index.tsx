@@ -19,14 +19,37 @@ export default function Home() {
     getUser();
   }, [])
 
+  useEffect(() => {
+    const getLinks = async () => {
+      try {
+      const { data, error } = await supabase
+        .from("links")
+        .select()
+        .eq("user_id", userId);
+
+      if (error) throw error;
+
+      console.log("data: ", data);
+      } catch (error) {
+        console.log("error: ", error)
+      }
+    };
+    if (userId) {
+      getLinks();
+    }
+  }, [userId]);
+  
   const addNewLink = async () => {
     try {
       if (title && url && userId){
-        const { data, error } = await supabase.from("links").insert({
+        const { data, error } = await supabase
+        .from("links")
+        .insert({
           title: title,
           url: url,
-          user_id: userId
-        }).select();
+          user_id: userId,
+        })
+        .select();
         if (error) throw error;
         console.log("data: ", data)
       }
