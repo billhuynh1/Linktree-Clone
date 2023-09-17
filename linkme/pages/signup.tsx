@@ -13,7 +13,7 @@ export default function Signup() {
             email: email, 
             password: password,
           });
-          console.log('response', response);
+          console.log("response", response);
 
           if (response.error) throw response.error;
           const userId = response.data.user?.id;

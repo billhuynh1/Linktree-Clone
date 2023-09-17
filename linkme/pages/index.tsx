@@ -1,11 +1,19 @@
-import { useEffect, useState } from 'react'
-import supabase from '@/utils/supabaseClient'
+import { useEffect, useState } from "react"
+import supabase from "@/utils/supabaseClient"
+import { link } from "fs";
+
+type Link = {
+  title: string;
+  url: string;
+}
 
 export default function Home() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
   const [userId, setUserId] = useState<string | undefined>();
   const [title, setTitle] = useState<string | undefined>();
   const [url, setUrl] = useState<string | undefined>();
+  const [links, setLinks] = useState<Link[]>();
+
   useEffect(() => {
     const getUser = async () => {
       const user = await supabase.auth.getUser();
@@ -24,11 +32,12 @@ export default function Home() {
       try {
       const { data, error } = await supabase
         .from("links")
-        .select()
+        .select("title, url")
         .eq("user_id", userId);
 
       if (error) throw error;
-
+      
+      setLinks(data)
       console.log("data: ", data);
       } catch (error) {
         console.log("error: ", error)
@@ -59,11 +68,23 @@ export default function Home() {
   };
 
   return (
-  <div className='flex flex-col items-center justify-center mt-5'>
+  <div className="flex flex-col items-center justify-center mt-5">
+    {links?.map((link: Link, index: number) => (
+      <div 
+      className="shadow-xl w-96 bg-indigo-500"
+        key={index}
+        onClick={(e) => {
+          e.preventDefault();
+          window.location.href = link.url;
+        }}
+      >
+        {link.title}
+      </div>
+    ))}
     {isAuthenticated && (
        <>
         <div className="mt-1">
-          <div className='block text-sm font-medium text-gray-700'>
+          <div className="block text-sm font-medium text-gray-700">
             Title
           </div>
           <input
@@ -77,7 +98,7 @@ export default function Home() {
         </div>
 
         <div className="mt-1">
-          <div className='block text-sm font-medium text-gray-700'>
+          <div className="block text-sm font-medium text-gray-700">
             URL
           </div>
           <input
